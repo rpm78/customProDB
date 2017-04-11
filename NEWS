@@ -58,4 +58,12 @@ UPDATED FUNCTIONS
 NEW FEATURES
 	o Update function OutputNovelJun.R to save '_jun_anno.RData', '_coding.RData' and '_junpep.RData', which could be used as input for proBAMr package
 	
+
+CHANGES IN VERSION 1.15.2
+-------------------------
+
+UPDATED FUNCTIONS
+
+	o Update function SharedJunc.R
+	 
 	

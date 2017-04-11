@@ -100,7 +100,7 @@ OutputNovelJun <- function(junction_type, genome, outfile,
                     jun_anno[, 'start_position'], '-', jun_anno[, 'end_position'], 
                     sep=''), jun_anno[, 'cov'],sep='|')
 		jun_anno <- cbind(jun_anno, 'pro_name'=pro_name)
-		jun_anno[, 'chromosome_name'] <- gsub('chr', '', jun_anno[, 'chromosome_name'] )
+		#jun_anno[, 'chromosome_name'] <- gsub('chr', '', jun_anno[, 'chromosome_name'] )
 		save(jun_anno, file=paste(outfile, '_jun_anno.RData', sep=''))
         
         
@@ -148,7 +148,8 @@ OutputNovelJun <- function(junction_type, genome, outfile,
         ######## coding seqs could be used as input for proBAMr
 		save(junpepcoding, file=paste(outfile, '_coding.RData', sep=''))
         
-        peptides_r1 <- translate(seqs)
+        #######three frame translation
+		peptides_r1 <- translate(seqs)
         peptides_r2 <- translate(subseq(seqs, start=2))
         peptides_r3 <- translate(subseq(seqs, start=3))
         
@@ -195,16 +196,35 @@ OutputNovelJun <- function(junction_type, genome, outfile,
                     cbind(name_r3, as.data.frame(peptides_r3)[, 1]))
         
         ### remove peptide contain stop codon
-        index_stop <- grep('*', all_pep[, 2], fixed=T)
-        if(length(index_stop) > 0){
-            all_pep_rmstop <- all_pep[-index_stop, ]
-        }else all_pep_rmstop <- all_pep
-        ### check if any peptides can be found in the normal database, remove those
-
-        ###slow
-		index_nor <- lapply(all_pep_rmstop[, 2], function(x) 
-                            grep(x, proteinseq[, 'peptide'], fixed=T))
-        index_nor <- which(unlist(lapply(index_nor, length)) > 0)
+        #index_stop <- grep('*', all_pep[, 2], fixed=T)
+        #if(length(index_stop) > 0){
+        #    all_pep_rmstop <- all_pep[-index_stop, ]
+        #}else all_pep_rmstop <- all_pep
+        
+		### remove any amino acids after first stop codon. after that,
+		### if the peptide is less than 7 amino acid, remove it
+		###	if the peptide is not cover the junction position, remove it
+		all_pep_rmstop <- all_pep
+		all_pep_rmstop[, 2] <- unlist(lapply(all_pep_rmstop[, 2], function(x) 
+									strsplit(x, '*',fixed=TRUE)[[1]][1]))
+		peplen <- lapply(all_pep_rmstop[, 2], nchar)
+		index_keep <- intersect(which(peplen > c(junpos_r1_p1, junpos_r2_p1, junpos_r3_p1)),
+						which(peplen > 7))
+		all_pep_rmstop <- all_pep_rmstop[index_keep, ]
+		
+		### check if any peptides can be found in the normal database, remove those
+		PEP <- all_pep_rmstop[, 2]
+        normalProteins = proteinseq[, 'peptide']
+		names(normalProteins) = proteinseq[, 'pro_name']
+		idxList = AhoCorasickSearchList(PEP, list(normal=normalProteins), groupByKeyword=T)
+		normal_pep <- names(idxList$normal)
+		
+		index_nor <- which(all_pep_rmstop[, 2] %in% normal_pep)
+		
+		###slow
+		#index_nor <- lapply(all_pep_rmstop[, 2], function(x) 
+        #                    grep(x, proteinseq[, 'peptide'], fixed=T))
+        #index_nor <- which(unlist(lapply(index_nor, length)) > 0)
         
         if(length(index_nor) > 0){
             all_pep_new <- all_pep_rmstop[-index_nor, ] 
