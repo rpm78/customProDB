@@ -10,7 +10,7 @@ import(GenomicFeatures)
 import(VariantAnnotation)
 import(RSQLite)
 
-
+importFrom(AhoCorasickTrie, AhoCorasickSearchList)
 importFrom(rtracklayer,browserSession, ucscTableQuery,
            tableNames, getTable, trackNames, ucscSchema)
 importFrom(biomaRt, getBM, listAttributes, listDatasets, listMarts,
