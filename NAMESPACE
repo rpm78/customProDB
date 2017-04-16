@@ -10,6 +10,9 @@ import(GenomicFeatures)
 import(VariantAnnotation)
 import(RSQLite)
 
+importFrom("methods", "as", "is")
+importFrom("utils", "download.file", "read.table", "write.table")
+
 importFrom(AhoCorasickTrie, AhoCorasickSearchList)
 importFrom(rtracklayer,browserSession, ucscTableQuery,
            tableNames, getTable, trackNames, ucscSchema)

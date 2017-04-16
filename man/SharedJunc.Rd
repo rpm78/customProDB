@@ -2,8 +2,7 @@
 \alias{SharedJunc}
 \title{Generate shared junctions dataset from multiple BED files}
 \usage{
-  SharedJunc(juns, share_num = 2, ext_up = 100,
-    ext_down = 100, ...)
+  SharedJunc(juns, share_num = 2, ...)
 }
 \arguments{
   \item{juns}{a list of GRanges object which input from
@@ -12,12 +11,6 @@
   \item{share_num}{Junctions must occurs in this number of
   samples to be consider. Two options, percentage format or
   sample number.}
-
-  \item{ext_up}{upstream extension from the junction point,
-  Default is 100nt.}
-
-  \item{ext_down}{downstream extension from the junction
-  point, Default is 100nt.}
 
   \item{...}{additional arguments}
 }
@@ -36,7 +29,7 @@
 path <- system.file("extdata/beds", package="customProDB")
 bedFiles<- paste(path, '/', list.files(path, pattern="*bed$"), sep='')
 juncs <- lapply(bedFiles, function(x) Bed2Range(x, skip=1, covfilter=5))
-shared <- SharedJunc(juncs, share_num=2, ext_up=100, ext_down=100)
+shared <- SharedJunc(juncs, share_num=2)
 shared
 }
 \author{

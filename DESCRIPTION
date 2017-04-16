@@ -1,20 +1,31 @@
 Package: customProDB
 Type: Package
 Title: Generate customized protein database from NGS data, with a focus
-        on RNA-Seq data, for proteomics search.
+        on RNA-Seq data, for proteomics search
 Version: 1.15.2
-Date: 2017-04-11
+Date: 2017-04-16
 Author: xiaojing wang
 Maintainer: xiaojing wang <xiaojing.wang@bcm.edu>
-Description: Generate customized protein sequence database from RNA-Seq
-        data for proteomics search
+Description: Database search is the most widely used approach for 
+		peptide and protein identification in mass spectrometry-based 
+		proteomics studies. Our previous study showed that 
+		sample-specific protein databases derived from RNA-Seq data 
+		can better approximate the real protein pools in the samples 
+		and thus improve protein identification. More importantly, 
+		single nucleotide variations, short insertion and deletions 
+		and novel junctions identified from RNA-Seq data make protein 
+		database more complete and sample-specific. Here, we report 
+		an R package customProDB that enables the easy generation of 
+		customized databases from RNA-Seq data for proteomics search. 
+		This work bridges genomics and proteomics studies and 
+		facilitates cross-omics data integration.
 License: Artistic-2.0
 Depends: R (>= 3.0.1), IRanges, AnnotationDbi, biomaRt
 Imports: S4Vectors (>= 0.9.25), IRanges, GenomeInfoDb, GenomicRanges,
         Rsamtools (>= 1.10.2), GenomicAlignments, Biostrings (>= 2.26.3),
         GenomicFeatures (>= 1.17.13), biomaRt (>= 2.17.1), stringr, RCurl,
         plyr, VariantAnnotation (>= 1.13.44), rtracklayer, RSQLite,
-        AnnotationDbi
+        AnnotationDbi, AhoCorasickTrie, methods
 Suggests: BSgenome.Hsapiens.UCSC.hg19
 LazyLoad: yes
 biocViews: MassSpectrometry, Proteomics, SNP, RNASeq, Software, Transcription,
