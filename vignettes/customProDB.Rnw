@@ -146,7 +146,7 @@ CDSfasta <- system.file("extdata", "refseq_coding_seq.fasta",
 annotation_path <- tempdir()
 PrepareAnnotationRefseq(genome='hg19', CDSfasta, pepfasta, annotation_path, 
 		dbsnp = NULL, transcript_ids=transcript_ids, 
-        splice_matrix=FALSE, COSMIC=FALSE)
+        splice_matrix=FALSE, ClinVar=FALSE)
 @
 
 

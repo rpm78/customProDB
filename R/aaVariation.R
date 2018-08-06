@@ -78,13 +78,18 @@ aaVariation <-  function(position_tab, coding, ...)
         vcodesDNAS <- lapply(vcodes,function(x) DNAStringSet(x))
         refcodesDNAS <- lapply(refcode, function(x) DNAString(x))
         
-        #refaa <- lapply(refcodesDNAS,function(x) translate(x))
+        ###Biostrings translate 'TTG' and 'CTG' to 'M' during update on april 2017.
+		### to avoid this, I added 'ATG' before translation.
+		#refaa <- lapply(refcodesDNAS,function(x) translate(x))
         refaa <- lapply(refcodesDNAS,function(x){
                          if(grepl ('N', x, fixed=T)) AAString('X')
-                         else  translate(x)})
+						 else substr(as.character(translate(DNAString(paste0("ATG",x)))), 2, 2)})
+        #                 else  translate(x)})
         
         #varaa <- lapply(vcodesDNAS,function(x) unique(translate(x),package='Biostrings'))
-        varaa <- lapply(vcodesDNAS, function(x) unique(translate(x)))
+        #varaa <- lapply(vcodesDNAS, function(x) unique(translate(x)))
+        varaa <- lapply(vcodesDNAS, function(x) 
+			unique(substr(as.character(translate(DNAString(paste0("ATG",x)))), 2, 2)))
         
         
         mtype <- mapply(function(x,y,z)

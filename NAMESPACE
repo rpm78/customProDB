@@ -10,6 +10,11 @@ import(GenomicFeatures)
 import(VariantAnnotation)
 import(RSQLite)
 
+importMethodsFrom(DBI, dbConnect, dbDisconnect,
+                       dbExecute, dbGetQuery,
+                       dbReadTable, dbWriteTable, dbListTables,
+                       dbListFields)
+
 importFrom("methods", "as", "is")
 importFrom("utils", "download.file", "read.table", "write.table")
 

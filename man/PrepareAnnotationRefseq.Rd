@@ -6,7 +6,7 @@
 \usage{
 PrepareAnnotationRefseq(genome = "hg19", CDSfasta, pepfasta, annotation_path,
   dbsnp = NULL, transcript_ids = NULL, splice_matrix = FALSE,
-  COSMIC = FALSE, ...)
+  ClinVar = FALSE, ...)
 }
 \arguments{
 \item{genome}{specify the UCSC DB identifier (e.g. "hg19")}
@@ -17,13 +17,13 @@ PrepareAnnotationRefseq(genome = "hg19", CDSfasta, pepfasta, annotation_path,
 
 \item{annotation_path}{specify a folder to store all the annotations.}
 
-\item{dbsnp}{specify a snp dataset to be used for the SNP annotation, default is NULL. (e.g. "snp135")}
+\item{dbsnp}{specify a snp dataset to be used for the SNP annotation, default is NULL. (e.g. "snp148")}
 
 \item{transcript_ids}{optionally, only retrieve transcript annotation data for the specified set of transcript ids. Default is NULL.}
 
 \item{splice_matrix}{whether generate a known exon splice matrix from the annotation. this is not necessary if you don't want to analyse junction results, default is FALSE.}
 
-\item{COSMIC}{whether to download COSMIC data, default is FALSE.}
+\item{ClinVar}{whether to download ClinVar data, default is FALSE.}
 
 \item{...}{additional arguments}
 }
@@ -44,7 +44,7 @@ CDSfasta <- system.file("extdata", "refseq_coding_seq.fasta",
 annotation_path <- tempdir()
 PrepareAnnotationRefseq(genome='hg19', CDSfasta, pepfasta, annotation_path, 
             dbsnp=NULL, transcript_ids=transcript_ids, 
-            splice_matrix=FALSE, COSMIC=FALSE)
+            splice_matrix=FALSE, ClinVar=FALSE)
 
 }
 \author{

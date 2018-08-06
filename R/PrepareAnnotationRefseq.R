@@ -5,10 +5,10 @@
 ##' @param CDSfasta path to the fasta file of coding sequence.
 ##' @param pepfasta path to the fasta file of protein sequence, check 'introduction' for more detail.
 ##' @param annotation_path specify a folder to store all the annotations.
-##' @param dbsnp specify a snp dataset to be used for the SNP annotation, default is NULL. (e.g. "snp135")
+##' @param dbsnp specify a snp dataset to be used for the SNP annotation, default is NULL. (e.g. "snp148")
 ##' @param transcript_ids optionally, only retrieve transcript annotation data for the specified set of transcript ids. Default is NULL.
 ##' @param splice_matrix whether generate a known exon splice matrix from the annotation. this is not necessary if you don't want to analyse junction results, default is FALSE. 
-##' @param COSMIC whether to download COSMIC data, default is FALSE.
+##' @param ClinVar whether to download ClinVar data, default is FALSE.
 ##' @param ... additional arguments
 ##' @return several .RData file containing annotations needed for further analysis.
 ##' @author Xiaojing Wang
@@ -23,14 +23,14 @@
 ##' annotation_path <- tempdir()
 ##' PrepareAnnotationRefseq(genome='hg19', CDSfasta, pepfasta, annotation_path, 
 ##'             dbsnp=NULL, transcript_ids=transcript_ids, 
-##'             splice_matrix=FALSE, COSMIC=FALSE)
+##'             splice_matrix=FALSE, ClinVar=FALSE)
 ##' 
 
 
 
 PrepareAnnotationRefseq <- function(genome='hg19', CDSfasta, pepfasta, 
                 annotation_path, dbsnp=NULL, transcript_ids=NULL, 
-                splice_matrix=FALSE, COSMIC=FALSE, 
+                splice_matrix=FALSE, ClinVar=FALSE,
  ...) {
     options(stringsAsFactors=FALSE)
     session  <- browserSession()
@@ -43,15 +43,16 @@ PrepareAnnotationRefseq <- function(genome='hg19', CDSfasta, pepfasta,
     saveDb(txdb, file=paste(annotation_path, '/txdb.sqlite', sep=''))
     packageStartupMessage(" done")
     
-    message("Prepare gene/transcript/protein id mapping information (ids.RData) ... ", 
+    
+	message("Prepare gene/transcript/protein id mapping information (ids.RData) ... ", 
             appendLF=FALSE)
     
-    query_refGene <- ucscTableQuery(session, "refGene", table="refGene", 
-                    names=transcript_ids)
+    query_refGene <- ucscTableQuery(session, "refSeqComposite", table="refGene")
     refGene <- getTable(query_refGene)
-    query <- ucscTableQuery(session, "refGene", table="hgFixed.refLink", 
-                names=refGene[, 'name2'])
-    reflink <- getTable(query)
+	refGene <- subset(refGene, name %in% transcript_ids)
+    #query <- ucscTableQuery(session, table="hgFixed.refLink", 
+    #            names=refGene[, 'name2'])
+    reflink <- .UCSC_dbselect("hgFixed", "refLink")
     ids <- subset(reflink, mrnaAcc %in% refGene[, 'name'], select = name:protAcc)
     colnames(ids) <- c('gene_name', 'description', 'tx_name', 'pro_name')
     save(ids, file=paste(annotation_path, '/ids.RData', sep=''))
@@ -231,14 +232,21 @@ PrepareAnnotationRefseq <- function(genome='hg19', CDSfasta, pepfasta,
             stop("invalid dbsnp name for specified genome")
         if (dbsnp == -1) 
             stop("ambiguous dbsnp name")
-        dbsnp_query <- ucscTableQuery(session, dbsnps[dbsnp],
-                    table=paste(dbsnps[dbsnp], 'CodingDbSnp', sep=''))
-        snpCodingTab <- getTable(dbsnp_query)
+        
+		snpCodingTab <- .UCSC_dbselect(genome(session), 
+				paste(dbsnps[dbsnp], 'CodingDbSnp', sep=''))
+		#rawToChar(t3[1:20,'alleles'][[2]])   ###hex code to character
+
+		#dbsnp_query <- ucscTableQuery(session, dbsnps[dbsnp],
+        #            table=paste(dbsnps[dbsnp], 'CodingDbSnp', sep=''))
+        #snpCodingTab <- getTable(dbsnp_query)
         snpCoding <- subset(snpCodingTab,transcript %in% refGene[, 'name'], 
                         select=c(chrom:name, alleleCount, alleles))
-        snpCoding <- unique(snpCoding)
+        snpCoding[, 'alleles'] <- unlist(lapply(snpCoding[, 'alleles'], 
+					function(x) rawToChar(x)))
+		snpCoding <- unique(snpCoding)
         #save(snpCoding,file=paste(annotation_path, '/snpcoding.RData', sep=''))
-        dbsnpinCoding <- GRanges(seqnames=snpCoding[, 'chrom'], 
+		dbsnpinCoding <- GRanges(seqnames=snpCoding[, 'chrom'], 
             ranges=IRanges(start=snpCoding[, 'chromStart'], 
             end=snpCoding[, 'chromEnd']), strand='*', 
             rsid=snpCoding[, 'name'], alleleCount=snpCoding[, 'alleleCount'], 
@@ -248,22 +256,45 @@ PrepareAnnotationRefseq <- function(genome='hg19', CDSfasta, pepfasta,
         packageStartupMessage(" done")
     }
     
-    if (COSMIC) {
-        #cosmic <- trackNames(session)[grep('cosmic',trackNames(session), fixed=T)]
-        message("Prepare COSMIC information (cosmic.RData) ... ", appendLF=FALSE)
+	if (ClinVar) {
+        message("Prepare ClinVar information (ClinVar.RData) ... ", appendLF=FALSE)
         
-        cosmic_query <- ucscTableQuery(session, 'cosmic', table='cosmic')
-        cosmicTab <- getTable(cosmic_query)
-        cosmic <- GRanges(seqnames=cosmicTab[, 'chrom'], 
-        ranges=IRanges(start=cosmicTab[, 'chromStart'], end=cosmicTab[, 'chromEnd']), 
-        strand = '*', cosid=cosmicTab[,'name'])    
+        clinvar_query <- ucscTableQuery(session, 'clinvar', table='clinvarMain')
+        clinvarTab <- getTable(clinvar_query)
+		
+		clinvar <- GRanges(seqnames=clinvarTab[, 'chrom'], 
+        ranges=IRanges(start=clinvarTab[, 'chromStart'], end=clinvarTab[, 'chromEnd']), 
+        strand = '*', rcvAcc=clinvarTab[,'rcvAcc'], clinSign=clinvarTab[,'clinSign'])    
         
-        #cosmic <- keepSeqlevels(cosmic,transGrange)
-        cosmic <- subsetByOverlaps(cosmic, transGrange)
+        clinvar <- subsetByOverlaps(clinvar, transGrange)
         
-        save(cosmic,file=paste(annotation_path, '/cosmic.RData', sep=''))
+        save(clinvar,file=paste(annotation_path, '/clinvar.RData', sep=''))
         packageStartupMessage(" done")        
     }
+	
+	
+	if(0 > 1){
+		####no longer available from UCSC table browser
+		if (COSMIC) {
+			#cosmic <- trackNames(session)[grep('cosmic',trackNames(session), fixed=T)]
+			message("Prepare COSMIC information (cosmic.RData) ... ", appendLF=FALSE)
+			
+			#cosmic_query <- ucscTableQuery(session, 'cosmic', table='cosmic')
+			#cosmicTab <- getTable(cosmic_query)
+			cosmicTab <- .UCSC_dbselect(genome(session), 'cosmic')
+			
+			cosmic <- GRanges(seqnames=cosmicTab[, 'chrom'], 
+			ranges=IRanges(start=cosmicTab[, 'chromStart'], end=cosmicTab[, 'chromEnd']), 
+			strand = '*', cosid=cosmicTab[,'name'])    
+			
+			#cosmic <- keepSeqlevels(cosmic,transGrange)
+			cosmic <- subsetByOverlaps(cosmic, transGrange)
+			
+			save(cosmic,file=paste(annotation_path, '/cosmic.RData', sep=''))
+			packageStartupMessage(" done")        
+		}
+	}
+	
     if(splice_matrix){
         message("Prepare exon splice information (splicemax.RData) ... ", 
                 appendLF=FALSE)
@@ -296,4 +327,26 @@ PrepareAnnotationRefseq <- function(genome='hg19', CDSfasta, pepfasta,
         mm=cbind(b[tmp[1:(n-1)]], b[tmp[2:n]])
         mm
     }
+
+	
+### See https://genome.ucsc.edu/goldenpath/help/mysql.html for how to connect
+### to a MySQL server at UCSC. By default UCSC_dbselect() uses the server
+### located on the US west coast.
+.UCSC_dbselect <- function(dbname, from, columns=NULL, where=NULL,
+                          server="genome-mysql.soe.ucsc.edu")
+{
+    columns <- if (is.null(columns)) "*" else paste0(columns, collapse=",")
+    SQL <- sprintf("SELECT %s FROM %s", columns, from)
+    if (!is.null(where)) {
+        stopifnot(isSingleString(where))
+        SQL <- paste(SQL, "WHERE", where)
+    }
+    dbconn <- dbConnect(RMariaDB::MariaDB(), dbname=dbname,
+                                             username="genome",
+                                             host=server,
+                                             port=3306)
+    on.exit(dbDisconnect(dbconn))
+    dbGetQuery(dbconn, SQL)
+}
+
 
