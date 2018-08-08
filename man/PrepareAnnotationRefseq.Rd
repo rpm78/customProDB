@@ -34,6 +34,7 @@ several .RData file containing annotations needed for further analysis.
 prepare the annotation for Refseq through UCSC table browser.
 }
 \examples{
+\dontrun{
 
 transcript_ids <- c("NM_001126112", "NM_033360", "NR_073499", "NM_004448",
         "NM_000179", "NR_029605", "NM_004333", "NM_001127511")
@@ -42,10 +43,11 @@ pepfasta <- system.file("extdata", "refseq_pro_seq.fasta",
 CDSfasta <- system.file("extdata", "refseq_coding_seq.fasta", 
             package="customProDB")
 annotation_path <- tempdir()
-PrepareAnnotationRefseq(genome='hg19', CDSfasta, pepfasta, annotation_path, 
+PrepareAnnotationRefseq(genome='hg38', CDSfasta, pepfasta, annotation_path, 
             dbsnp=NULL, transcript_ids=transcript_ids, 
             splice_matrix=FALSE, ClinVar=FALSE)
 
+}
 }
 \author{
 Xiaojing Wang

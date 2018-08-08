@@ -19,7 +19,7 @@ importFrom("methods", "as", "is")
 importFrom("utils", "download.file", "read.table", "write.table")
 
 importFrom(AhoCorasickTrie, AhoCorasickSearchList)
-importFrom(rtracklayer,browserSession, ucscTableQuery,
+importFrom(rtracklayer, browserSession, ucscTableQuery,
            tableNames, getTable, trackNames, ucscSchema)
 importFrom(biomaRt, getBM, listAttributes, listDatasets, listMarts,
            useDataset, useMart)
@@ -27,12 +27,12 @@ importFrom(biomaRt, getBM, listAttributes, listDatasets, listMarts,
 #importFrom(IRanges, DataFrame,  unlist,countOverlaps, 
 #    findOverlaps, queryHits, values)		   
 
-importFrom(GenomicFeatures, cdsBy, exons, transcripts,
-    fiveUTRsByTranscript, threeUTRsByTranscript)
+#importFrom(GenomicFeatures, cdsBy, exons, transcripts,
+#    fiveUTRsByTranscript, threeUTRsByTranscript)
 
-importFrom(VariantAnnotation, scanVcf, scanVcfHeader, samples)		   
+#importFrom(VariantAnnotation, scanVcf, scanVcfHeader, samples)		   
 
-importFrom(AnnotationDbi, loadDb)
+importFrom(AnnotationDbi, loadDb, saveDb)
 importFrom(stringr, 'str_sub<-' )
 importFrom(plyr, ddply, '.')
 

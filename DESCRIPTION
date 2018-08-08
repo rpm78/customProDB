@@ -2,10 +2,11 @@ Package: customProDB
 Type: Package
 Title: Generate customized protein database from NGS data, with a focus
         on RNA-Seq data, for proteomics search
-Version: 1.21.4
-Date: 2018-08-06
-Author: xiaojing wang
-Maintainer: xiaojing wang <xwang.research@gmail.com>
+Version: 1.21.5
+Date: 2018-08-08
+Author: Xiaojing Wang
+Maintainer: Xiaojing Wang <xwang.research@gmail.com>
+			Bo Wen <wenbostar@gmail.com>
 Description: Database search is the most widely used approach for 
 		peptide and protein identification in mass spectrometry-based 
 		proteomics studies. Our previous study showed that 
@@ -20,13 +21,13 @@ Description: Database search is the most widely used approach for
 		This work bridges genomics and proteomics studies and 
 		facilitates cross-omics data integration.
 License: Artistic-2.0
-Depends: R (>= 3.0.1), IRanges, AnnotationDbi, biomaRt
-Imports: S4Vectors (>= 0.9.25), IRanges, DBI, GenomeInfoDb, GenomicRanges,
+Depends: R (>= 3.0.1), IRanges, AnnotationDbi, biomaRt(>= 2.17.1)
+Imports: S4Vectors (>= 0.9.25), DBI, GenomeInfoDb, GenomicRanges,
         Rsamtools (>= 1.10.2), GenomicAlignments, Biostrings (>= 2.26.3),
-        GenomicFeatures (>= 1.32.0), biomaRt (>= 2.17.1), stringr, RCurl,
+        GenomicFeatures (>= 1.32.0), stringr, RCurl,
         plyr, VariantAnnotation (>= 1.13.44), rtracklayer, RSQLite,
-        AnnotationDbi, AhoCorasickTrie, methods
+        AhoCorasickTrie, methods
 Suggests: RMariaDB, BSgenome.Hsapiens.UCSC.hg19
 LazyLoad: yes
-biocViews: MassSpectrometry, Proteomics, SNP, RNASeq, Software, Transcription,
-        AlternativeSplicing
+biocViews: Sequencing, MassSpectrometry, Proteomics, SNP, RNASeq, 
+		Software, Transcription, AlternativeSplicing, FunctionalGenomics
