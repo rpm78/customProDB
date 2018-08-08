@@ -2,7 +2,7 @@ Package: customProDB
 Type: Package
 Title: Generate customized protein database from NGS data, with a focus
         on RNA-Seq data, for proteomics search
-Version: 1.21.3
+Version: 1.21.4
 Date: 2018-08-06
 Author: xiaojing wang
 Maintainer: xiaojing wang <xwang.research@gmail.com>
