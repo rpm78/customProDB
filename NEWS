@@ -74,4 +74,11 @@ UPDATED FUNCTIONS
 
 	o Fix bug in function PrepareAnnotationRefseq.R
 	o Update function aaVariation.R to avoid translate 'TTG' and 'CTG' into 'M' 
+
+CHANGES IN VERSION 1.26.1
+-------------------------
+
+BUG FIXES
+
+	o Fix a small bug in function PrepareAnnotationRefseq.R
 	
